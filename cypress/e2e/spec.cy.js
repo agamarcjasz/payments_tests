@@ -1,16 +1,18 @@
+import { generateRandomNumber, nextMonth15th } from "../support/functions"
+
 beforeEach(() => {
-  cy.visit('https://autotest-recruitment.qa.shortlist.co/v/test-vendor-1/i/8z/762c64abf48540b686b12fa10048496f/')
-  cy.get('[data-testid="SidebarItem-payments"]').click()
-  cy.get('[data-testid="SideNavigation_SubSectionItem_unpaid-work"]').click()
+  cy.visit(Cypress.env('test_url'))
+  cy.getByDataTestId('SidebarItem-payments').click()
+  cy.getByDataTestId('SideNavigation_SubSectionItem_unpaid-work').click()
 })
 
 describe('adding expense', () => {
   it('should add new expense and check if it was added', () => {
-    const randomNumber = Math.floor(Math.random() * 1000) + 1;
+    
     const amount = "1,000.00"
-    const fileName = "dummy.pdf"
-    const expenseName = `Invoice_${randomNumber}`
+    const expenseName = `Invoice_${generateRandomNumber()}`
     const note = "Invoice for the app testing service"
+    const dueDate = nextMonth15th()
 
     cy.contains("Add new expense").click()
     cy.contains(' Test Vendor 1 ').should('be.visible')
@@ -21,7 +23,7 @@ describe('adding expense', () => {
     cy.get('r-input-file').within((el) => {
       cy.get('[role="presentation"]').click()
     })
-    cy.fixture(`${fileName}`, { encoding: null }).as('expenseFile')
+    cy.fixture('dummy.pdf', { encoding: null }).as('expenseFile')
     cy.get('input[type="file"]').selectFile('@expenseFile', {force: true})
     cy.get('[data-e2e="upload"]').click()
     cy.get('[id="invoiceNumber"]').type(expenseName)
@@ -39,11 +41,12 @@ describe('adding expense', () => {
     cy.contains(expenseName).should('be.visible')
 
     cy.contains(expenseName).click()
-    cy.get('[data-testid="PaymentDetailsView"]').within((el) => {
+    cy.getByDataTestId('PaymentDetailsView').within((el) => {
       cy.contains(expenseName).should('be.visible')
       cy.contains(amount).should('be.visible')
       cy.get('payment-download-link[payment]').should('be.visible')
       cy.contains(note).should('be.visible')
+      cy.contains(dueDate).should('be.visible')
     })
   })
 })

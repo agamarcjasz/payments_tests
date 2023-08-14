@@ -1,2 +1,3 @@
 cypress/downloads
 node_modules
+cypress.env.json
