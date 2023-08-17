@@ -1,0 +1,1 @@
+To use the repository you'll need the values in the `cypress.env.json` file. Please reach out to the author if you need it. 
